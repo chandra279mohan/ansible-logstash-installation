@@ -15,12 +15,12 @@
     - name: Download Logstash RPM package {{ logstash_version }}
       ansible.builtin.get_url:
         url: https://artifacts.elastic.co/downloads/logstash/logstash-{{ logstash_version }}-x86_64.rpm
-        dest: {{ es_destination }}
+        dest: {{ logstash_destination }}
         #checksum: "sha512:https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{ logstash_version }}-x86_64.rpm.sha512"
         
     - name: Install Logstash
       ansible.builtin.yum:
-        name: /{{ es_destination }}/logstash-{{ es_version }}-x86_64.rpm
+        name: /{{ logstash_destination }}/logstash-{{ logstash_version }}-x86_64.rpm
         state: present
         
     - name: Just force systemd to reload
