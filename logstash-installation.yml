@@ -12,13 +12,13 @@
 
   tasks:
 
-    - name: Download Logstash RPM package {{ logstash_version }}
+    - name: Download {{ application }} RPM package {{ logstash_version }}
       ansible.builtin.get_url:
         url: https://artifacts.elastic.co/downloads/logstash/logstash-{{ logstash_version }}-x86_64.rpm
         dest: {{ logstash_destination }}
         #checksum: "sha512:https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{ logstash_version }}-x86_64.rpm.sha512"
         
-    - name: Install Logstash
+    - name: Install {{ application }}
       ansible.builtin.yum:
         name: /{{ logstash_destination }}/logstash-{{ logstash_version }}-x86_64.rpm
         state: present
@@ -27,7 +27,7 @@
       ansible.builtin.systemd:
         daemon_reload: yes
         
-    - name: Enable service logstash and ensure it is not masked
+    - name: Enable service {{ application }} and ensure it is not masked
       ansible.builtin.systemd:
         name: {{ application }}
         enabled: yes
@@ -39,7 +39,7 @@
         name: {{ application }}
         state: started
 
-    - name: Wait for cluster health to return to green
+    - name: Wait for {{ application }} response and validate {{ application }} version
       ansible.builtin.uri:
         url: http://localhost:{{ logstash_http_port }}
         method: GET
