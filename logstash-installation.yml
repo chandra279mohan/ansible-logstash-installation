@@ -42,7 +42,7 @@
     - name: Wait for {{ application }} response and validate {{ application }} version
       ansible.builtin.uri:
         url: http://localhost:{{ logstash_http_port }}
-        method: GET
+        #method: GET
       register: response
       until: "response.json.version == '{{ logstash_version }}'"
       retries: 100
