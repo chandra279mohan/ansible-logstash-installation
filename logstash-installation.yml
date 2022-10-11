@@ -1,11 +1,12 @@
 - name: Logstash Installation(7.x)
   hosts: logstash
+  gather_facts: false
   become: true
 
   vars:
     logstash_http_port: 9600
     logstash_version: 7.16.2
-    logstash_destination: /opt/logstash
+    logstash_destination: /opt
     application: logstash
     
 
@@ -15,12 +16,12 @@
     - name: Download {{ application }} RPM package {{ logstash_version }}
       ansible.builtin.get_url:
         url: https://artifacts.elastic.co/downloads/logstash/logstash-{{ logstash_version }}-x86_64.rpm
-        dest: {{ logstash_destination }}
+        dest: "{{ logstash_destination }}"
         #checksum: "sha512:https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{ logstash_version }}-x86_64.rpm.sha512"
         
     - name: Install {{ application }}
       ansible.builtin.yum:
-        name: /{{ logstash_destination }}/logstash-{{ logstash_version }}-x86_64.rpm
+        name: /opt/logstash-{{ logstash_version }}-x86_64.rpm
         state: present
         
     - name: Just force systemd to reload
@@ -29,14 +30,14 @@
         
     - name: Enable service {{ application }} and ensure it is not masked
       ansible.builtin.systemd:
-        name: {{ application }}
+        name: "{{ application }}"
         enabled: yes
         masked: no
 
 
     - name: Start service {{ application}}, if not started
       ansible.builtin.service:
-        name: {{ application }}
+        name: "{{ application }}"
         state: started
 
     - name: Wait for {{ application }} response and validate {{ application }} version
@@ -44,6 +45,6 @@
         url: http://localhost:{{ logstash_http_port }}
         #method: GET
       register: response
-      until: "response.json.version == '{{ logstash_version }}'"
+      until: response.json.version == "{{ logstash_version }}"
       retries: 100
       delay: 10
